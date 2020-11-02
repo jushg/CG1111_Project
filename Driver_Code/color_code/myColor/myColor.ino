@@ -106,8 +106,8 @@ void getRangeReading(int times,int paper, int color){
   Serial.println(int(colorRange[paper][color][1])); 
 }
 
-long ColorDetector::getColor(){
-  uint16_t reading = lightSensor.read();
+long getColor(){
+  
   uint16_t colorArray[3];
   for(int c = 0;c<=2;c++){
     if (c == 0){
@@ -119,12 +119,12 @@ long ColorDetector::getColor(){
       } //turn ON the LED, red, green or blue, one colour at a time.
       led.show();
       delay(RGBWait);
-      uint16_t reading[c] = getAvgReading(5);
+      colorArray[c] = getAvgReading(5);
   }
   //Get three diffs
-   r_min_g = colorArray[0] - colorArray[1];
-   r_min_b = colorArray[0] - colorArray[2];
-   g_min_b = colorArray[1] - colorArray[2];
+   uint16_t r_min_g = colorArray[0] - colorArray[1];
+   uint16_t r_min_b = colorArray[0] - colorArray[2];
+   uint16_t g_min_b = colorArray[1] - colorArray[2];
   // now test for color
   
   if (r_min_g > 10 && r_min_b < 40) {
