@@ -1,7 +1,6 @@
 #include <MeMCore.h>
 
 
-
 // mising color() to check the color
 // IR to check the distance
 MeLineFollower lineFinder(PORT_1);
@@ -17,6 +16,7 @@ bool finished = false;
 void setup() 
 {
   // put your setup code here, to run once:
+  
   //running through the maze
   while (!finished) 
   {
