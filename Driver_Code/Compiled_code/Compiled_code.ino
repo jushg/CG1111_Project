@@ -1,7 +1,7 @@
 #include <MeMCore.h>
 #include "Wire.h"
 #define THRESHOLD0 3.6
-#define THRESHOLD1 2.7
+#define THRESHOLD1 3
 #define WALL 1
 #define RIGHT A1
 #define LEFT A0
@@ -215,14 +215,14 @@ void adjustLeft() // to be used if mbot is not moving straight based on data fro
  //double v = analogRead(RIGHT) / 1023.0 * 5;
   //if (v < THRESHOLD1) {
     motor1.run(-i);
-    motor2.run(i+20);
+    motor2.run(i+10);
     delay(100);
 }
 void adjustRight() // to be used if mbot is not moving straight based on data from the ir sensors
 {
  //double v = analogRead(LEFT) / 1023.0 * 5;
   //if (v < THRESHOLD0) {
-    motor1.run(-i-20);
+    motor1.run(-i-10);
     motor2.run(i);
     delay(100);
   //}
