@@ -88,7 +88,7 @@ void loop() {
   adjustRight();
   }
   if (left > THRESHOLD0 && right > THRESHOLD1) {
-    moveForward90;
+    moveForward();
   }
 
 //decide 
@@ -190,7 +190,6 @@ void adjustLeft() // to be used if mbot is not moving straight based on data fro
 {
  //double v = analogRead(RIGHT) / 1023.0 * 5;
   //if (v < THRESHOLD1) {
-    Serial.println("LEFT");
     motor1.run(-i);
     motor2.run(i+10);
     delay(100);
@@ -199,7 +198,6 @@ void adjustRight() // to be used if mbot is not moving straight based on data fr
 {
  //double v = analogRead(LEFT) / 1023.0 * 5;
   //if (v < THRESHOLD0) {
-    Serial.println("RIGHT");
     motor1.run(-i-10);
     motor2.run(i);
     delay(100);
