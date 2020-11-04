@@ -1,5 +1,11 @@
 #include <MeMCore.h>
 #include "Wire.h"
+#define THRESHOLD0 2.4
+#define THRESHOLD1 3.6
+#define RIGHT A1
+#define LEFT A0
+
+#include <SoftwareSerial.h>
  
 
 // mising color() to check the color
@@ -11,18 +17,18 @@ MeLightSensor lightSensor(PORT_8);
 MeBuzzer buzzer;
 MeDCMotor motor1(M1); //left motor
 MeDCMotor motor2(M2); //right motor
+MeInfraredReceiver infraredReceiverDecode(PORT_4);
 
 #define RGBWait 200 //in milliseconds
 #define LDRWait 10 //in milliseconds 
 
-#define CALWait 5000
 #define RED 1
 #define GREEN 2
 #define BLUE 3
 #define YELLOW 4
 #define PURPLE 5
 #define BLACK 6
-#define NEAR_WALL 4 ;//for two cases the value may need to be changed
+#define NEAR_WALL 4 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
 char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
@@ -51,6 +57,10 @@ uint16_t colorRange[6][3][2] = {
 
 void setup() 
 {
+  double left;
+  double right;
+  infraredReceiverDecode.begin();
+  Serial.begin(9600);
   // put your setup code here, to run once:
   led.setpin(13);
   //running through the maze
@@ -63,44 +73,54 @@ void setup()
     } 
     else 
     {
+       moveForward();
+    left = analogRead(LEFT) / 1023.0 * 5;
+    right = analogRead(RIGHT) / 1023.0 *5;
+    if (left < THRESHOLD0) {
+      adjustLeft();
+     }
+    if (right < THRESHOLD1) {
+      adjustRight();
+     }
+     if (left > THRESHOLD0 && right > THRESHOLD1) {
       moveForward();
+  }
     }
   }
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
 }
-
 //decide 
 void checkColor()
 {
-  if(color() == RED) 
+  if(getColor() == RED) 
   {
     //turn left
     turnLeft();
   }
-  else if(color() == GREEN) 
+  else if(getColor() == GREEN) 
   {
     //turn right
     turnRight();
   }
-  else if(color() == YELLOW) 
+  else if(getColor() == YELLOW) 
   {
     // 180 degree in a same grid
     UTurn();
   }
-  else if(color() == PURPLE) 
+  else if(getColor() == PURPLE) 
   {
     // two successive left turns
     doubleLeft();
   }
-  else if(color() == LIGHT_BLUE) 
+  else if(getColor() == BLUE) 
   {
     //two successive right turns
     doubleRight();
   }
-  else if(color() == BLACK)
+  else if(getColor() == BLACK)
   {
      //finished, play song
     buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
@@ -166,23 +186,24 @@ void doubleRight()
   stop();
   turnLeft();
 }
-/*
+
 void adjustLeft() // to be used if mbot is not moving straight based on data from the ir sensors
 {
- while()
- {
-   motor1.run(-i);
-   motor2.run(i+10);
- }
+ //double v = analogRead(RIGHT) / 1023.0 * 5;
+  //if (v < THRESHOLD1) {
+    motor1.run(-i);
+    motor2.run(i+10);
+    delay(100);
 }
 void adjustRight() // to be used if mbot is not moving straight based on data from the ir sensors
 {
- while()
- {
-   motor1.run(-i-10);
-   motor2.run(i);
- }
-}*/
+ //double v = analogRead(LEFT) / 1023.0 * 5;
+  //if (v < THRESHOLD0) {
+    motor1.run(-i-10);
+    motor2.run(i);
+    delay(100);
+  //}
+}
 
 bool front_near_wall() 
 {
@@ -208,8 +229,8 @@ uint16_t getAvgReading(int times){
 //calculate the average and return it
   return total/times;
 }
+
 long getColor(){
-  
   uint16_t colorArray[3];
   for(int c = 0;c<=2;c++){
     if (c == 0){
