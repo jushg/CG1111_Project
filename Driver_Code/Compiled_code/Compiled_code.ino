@@ -29,7 +29,7 @@ MeInfraredReceiver infraredReceiverDecode(PORT_4);
 #define YELLOW 4
 #define PURPLE 5
 #define BLACK 6
-#define NEAR_WALL 4 //for two cases the value may need to be changed
+#define NEAR_WALL 5 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
 char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
