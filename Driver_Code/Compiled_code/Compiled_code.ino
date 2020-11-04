@@ -267,10 +267,29 @@ long getColor(){
       delay(RGBWait);
       colorArray[c] = getAvgReading(5);
   }
+
+  if (colorArray[0] > 220 && colorArray[0]< 230 && colorArray[1]> 147 && colorArray1[1]< 152 && colorArray[2]> 135 && colorArray1[2]< 145) {
+    // return green
+    return GREEN;
+  } else if (colorArray[0] > 250 && colorArray[0]< 260 && colorArray[1]> 140 && colorArray1[1]< 155 && colorArray[2]> 170 && colorArray1[2]< 180) {
+    return PURPLE;
+  } else if (colorArray[0] > 280 && colorArray[0]< 300 && colorArray[1]> 120 && colorArray1[1]< 135 && colorArray[2]> 125 && colorArray1[2]< 150) {
+    return RED;
+  } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray1[1]< 175 && colorArray[2]> 140 && colorArray1[2]< 160) {
+    return YELLOW;  
+  } else if (colorArray[0] > 250 && colorArray[0]< 270 && colorArray[1]> 160 && colorArray1[1]< 180 && colorArray[2]> 180 && colorArray1[2]< 200){
+    return BLUE;  
+  }
+  return BLACK;  
+  
+
+
+  
+  /*
   //Get three diffs
    uint16_t r_min_g = colorArray[0] - colorArray[1];
    uint16_t r_min_b = colorArray[0] - colorArray[2];
-   uint16_t g_min_b = colorArray[1] - colorArray[2];
+   uint16_t g_min_b = colorArray[1] - colorArray[2];*
   // now test for color
   
   if (r_min_g > 10 && r_min_b < 40) {
@@ -286,5 +305,5 @@ long getColor(){
     return BLUE;  
   } else {
     return BLACK;  
-  }
+  }*/
 }

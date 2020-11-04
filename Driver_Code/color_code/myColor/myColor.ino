@@ -5,7 +5,7 @@
 // Define time delay before taking another LDR reading
 #define LDRWait 10 //in milliseconds 
 
-#define CALWait 5000
+#define CALWait 100
 #define RED 1
 #define GREEN 2
 #define BLUE 3
@@ -49,7 +49,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  //getColor();
+  calibrate();
 }
 
 void calibrate(){
@@ -94,8 +95,8 @@ void getRangeReading(int times,int paper, int color){
     if (max < reading) {
       max = reading;
     }
-    Serial.println(max);
-    Serial.println(min);
+    //Serial.println(max);
+    //Serial.println(min);
     delay(LDRWait);
   }
   colorRange[paper][color][0] = min;
@@ -103,7 +104,8 @@ void getRangeReading(int times,int paper, int color){
   
   Serial.println(int(colorRange[paper][color][0]));
   Serial.print(" ");
-  Serial.println(int(colorRange[paper][color][1])); 
+  Serial.println(int(colorRange[paper][color][1]));
+   Serial.println((colorRange[paper][color][1] + colorRange[paper][color][0]) / 2);
 }
 
 long getColor(){
@@ -129,18 +131,24 @@ long getColor(){
   
   if (r_min_g > 10 && r_min_b < 40) {
     // return green
+    Serial.println("Green");
     return GREEN;
   } else if (r_min_g > 115 && r_min_b < 145) {
+    Serial.println("Purple");
     return PURPLE;
   } else if (r_min_b > 255 && r_min_b < 285) {
+    Serial.println("Red");
     return RED;
   } else if (r_min_b > 320 && r_min_b < 350) {
+    Serial.println("Yellow");
     return YELLOW;  
   } else if (g_min_b > 0 && g_min_b < 35 && colorArray[0] > 300){
+    Serial.println("Blue");
     return BLUE;  
-  } else {
-    return BLACK;  
   }
+  Serial.println("Blak");
+  return BLACK;  
+  
 }
 uint16_t getAvgReading(int times){      
 //find the average reading for the requested number of times of scanning LDR
