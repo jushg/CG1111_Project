@@ -1,7 +1,7 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 2.7
-#define THRESHOLD1 3.6
+#define THRESHOLD0 3.6
+#define THRESHOLD1 2.7
 #define WALL 1
 #define RIGHT A1
 #define LEFT A0
@@ -88,18 +88,18 @@ void setup()
       }
       if (left < WALL) {
         moveBackward();
-        delay(1000);
+        delay(500);
         motor1.run(i);
         motor2.run(i);
-        delay(100);
+        delay(50);
         moveForward();
       }
       if (right < WALL) {
         moveBackward();
-        delay(1000);
+        delay(500);
         motor1.run(-i);
         motor2.run(-i);
-        delay(100);
+        delay(50);
         moveForward();
       }
     }
@@ -215,14 +215,14 @@ void adjustLeft() // to be used if mbot is not moving straight based on data fro
  //double v = analogRead(RIGHT) / 1023.0 * 5;
   //if (v < THRESHOLD1) {
     motor1.run(-i);
-    motor2.run(i+10);
+    motor2.run(i+20);
     delay(100);
 }
 void adjustRight() // to be used if mbot is not moving straight based on data from the ir sensors
 {
  //double v = analogRead(LEFT) / 1023.0 * 5;
   //if (v < THRESHOLD0) {
-    motor1.run(-i-10);
+    motor1.run(-i-20);
     motor2.run(i);
     delay(100);
   //}
@@ -268,16 +268,16 @@ long getColor(){
       colorArray[c] = getAvgReading(5);
   }
 
-  if (colorArray[0] > 220 && colorArray[0]< 230 && colorArray[1]> 147 && colorArray1[1]< 152 && colorArray[2]> 135 && colorArray1[2]< 145) {
+  if (colorArray[0] > 220 && colorArray[0]< 230 && colorArray[1]> 147 && colorArray[1]< 152 && colorArray[2]> 135 && colorArray[2]< 145) {
     // return green
     return GREEN;
-  } else if (colorArray[0] > 250 && colorArray[0]< 260 && colorArray[1]> 140 && colorArray1[1]< 155 && colorArray[2]> 170 && colorArray1[2]< 180) {
+  } else if (colorArray[0] > 250 && colorArray[0]< 260 && colorArray[1]> 140 && colorArray[1]< 155 && colorArray[2]> 170 && colorArray[2]< 180) {
     return PURPLE;
-  } else if (colorArray[0] > 280 && colorArray[0]< 300 && colorArray[1]> 120 && colorArray1[1]< 135 && colorArray[2]> 125 && colorArray1[2]< 150) {
+  } else if (colorArray[0] > 280 && colorArray[0]< 300 && colorArray[1]> 120 && colorArray[1]< 135 && colorArray[2]> 125 && colorArray[2]< 150) {
     return RED;
-  } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray1[1]< 175 && colorArray[2]> 140 && colorArray1[2]< 160) {
+  } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray[1]< 175 && colorArray[2]> 140 && colorArray[2]< 160) {
     return YELLOW;  
-  } else if (colorArray[0] > 250 && colorArray[0]< 270 && colorArray[1]> 160 && colorArray1[1]< 180 && colorArray[2]> 180 && colorArray1[2]< 200){
+  } else if (colorArray[0] > 250 && colorArray[0]< 270 && colorArray[1]> 160 && colorArray[1]< 180 && colorArray[2]> 180 && colorArray[2]< 200){
     return BLUE;  
   }
   return BLACK;  
