@@ -1,8 +1,8 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 2.8
-#define THRESHOLD1 3.4
-#define WALL 1
+#define THRESHOLD0 3.1
+#define THRESHOLD1 3.3
+#define WALL 1.5
 #define RIGHT A1
 #define LEFT A0
 
@@ -20,7 +20,7 @@ MeDCMotor motor1(M1); //left motor
 MeDCMotor motor2(M2); //right motor
 MeInfraredReceiver infraredReceiverDecode(PORT_4);
 
-#define RGBWait 200 //in milliseconds
+#define RGBWait 100 //in milliseconds
 #define LDRWait 10 //in milliseconds 
 
 #define RED 1
@@ -29,7 +29,7 @@ MeInfraredReceiver infraredReceiverDecode(PORT_4);
 #define YELLOW 4
 #define PURPLE 5
 #define BLACK 6
-#define NEAR_WALL 5 //for two cases the value may need to be changed
+#define NEAR_WALL 6 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
 char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
@@ -54,7 +54,7 @@ uint16_t colorRange[6][3][2] = {
   }
 };
 
-
+void moveForward (int speed_i = 150);
 
 void setup() 
 {
@@ -74,7 +74,7 @@ void setup()
     } 
     else 
     {
-      moveForward();
+      moveForward(200);
       left = analogRead(LEFT) / 1023.0 * 5;
       right = analogRead(RIGHT) / 1023.0 *5;
       if (left < THRESHOLD0) {
@@ -84,7 +84,7 @@ void setup()
         adjustRight();
       }
       if (left > THRESHOLD0 && right > THRESHOLD1) {
-        moveForward();
+        moveForward(200);
       }
       if (left < WALL) {
         moveBackward();
@@ -112,32 +112,33 @@ void loop() {
 //decide 
 void checkColor()
 {
-  if(getColor() == RED) 
+  long thecolor = getColor();
+  if(thecolor == RED) 
   {
     //turn left
     turnLeft();
   }
-  else if(getColor() == GREEN) 
+  else if(thecolor == GREEN) 
   {
     //turn right
     turnRight();
   }
-  else if(getColor() == YELLOW) 
+  else if(thecolor == YELLOW) 
   {
     // 180 degree in a same grid
     UTurn();
   }
-  else if(getColor() == PURPLE) 
+  else if(thecolor == PURPLE) 
   {
     // two successive left turns
     doubleLeft();
   }
-  else if(getColor() == BLUE) 
+  else if(thecolor == BLUE) 
   {
     //two successive right turns
     doubleRight();
   }
-  else if(getColor() == BLACK)
+  else if(thecolor == BLACK)
   {
      //finished, play song
     buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
@@ -149,10 +150,10 @@ void checkColor()
     
   }
 }
-void moveForward()
+void moveForward(int speed_i)
 {
-  motor1.run(-i);
-  motor2.run(i);
+  motor1.run(-speed_i);
+  motor2.run(speed_i );
 }
 
 void moveBackward()
@@ -187,12 +188,14 @@ void UTurn()
 {
   double left = analogRead(LEFT) / 1023.0 * 5;
   double right = analogRead(RIGHT) / 1023.0 *5;
-  if (left > 3 ) {
+  if (right < 3.3 ) {
     turnLeft();
+    stop();
     turnLeft();
   }
   else {
     turnRight();
+    stop();
     turnRight();
   }
 }
@@ -209,13 +212,13 @@ void doubleLeft()
 }
 void doubleRight()
 {
-  turnLeft();
+  turnRight();
   while(!front_near_wall())
   {
     moveForward();
   }
   stop();
-  turnLeft();
+  turnRight();
 }
 
 void adjustLeft() // to be used if mbot is not moving straight based on data from the ir sensors
@@ -224,15 +227,21 @@ void adjustLeft() // to be used if mbot is not moving straight based on data fro
   //if (v < THRESHOLD1) {
     motor1.run(-i);
     motor2.run(i+10);
-    delay(100);
+    delay(70);
+    motor1.run(-i);
+    motor2.run(i);
+
 }
 void adjustRight() // to be used if mbot is not moving straight based on data from the ir sensors
 {
  //double v = analogRead(LEFT) / 1023.0 * 5;
   //if (v < THRESHOLD0) {
-    motor1.run(-i-10);
+    motor1.run(-i-15);
     motor2.run(i);
-    delay(100);
+    delay(70);
+    motor1.run(-i);
+    motor2.run(i);
+
   //}
 }
 
@@ -273,26 +282,33 @@ long getColor(){
       } //turn ON the LED, red, green or blue, one colour at a time.
       led.show();
       delay(RGBWait);
-      colorArray[c] = getAvgReading(5);
-  }
-
+      colorArray[c] = getAvgReading(2);
+      led.setColor(0,0,0);
+      led.show();
+      delay(RGBWait);
+      
+  }/*
+  uint16_t r_min_g = colorArray[0] - colorArray[1];
+   uint16_t r_min_b = colorArray[0] - colorArray[2];
+   uint16_t g_min_b = colorArray[1] - colorArray[2];*/
   if (colorArray[0] > 210 && colorArray[0]< 240 && colorArray[1]> 140 && colorArray[1]< 160 && colorArray[2]> 130 && colorArray[2]< 150) {
     // return green
     //Serial.println("Green");
     return GREEN;
-  } else if (colorArray[0] > 245 && colorArray[0]< 270 && colorArray[1]> 135 && colorArray[1]< 155 && colorArray[2]> 160 && colorArray[2]< 190) {
- //   Serial.println("Purple");
-    return PURPLE;
+  
   } else if (colorArray[0] > 275 && colorArray[0]< 305 && colorArray[1]> 115 && colorArray[1]< 135 && colorArray[2]> 125 && colorArray[2]< 150) {
  //   Serial.println("Red");
     return RED;
   } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray[1]< 175 && colorArray[2]> 135 && colorArray[2]< 165) {
   //  Serial.println("Yellow");
     return YELLOW;  
-  } else if (colorArray[0] > 235 && colorArray[0]< 275 && colorArray[1]> 150 && colorArray[1]< 190 && colorArray[2]> 175 && colorArray[2]< 210){
+  }  else if (/*colorArray[0] > 250 && colorArray[0]< 270 &&*/ colorArray[1]> 155 && colorArray[1]< 200 /*&& colorArray[2]> 175 && colorArray[2]< 210*/){
   //  Serial.println("Blue");
     return BLUE;  
-  }
+  } else if (/*colorArray[0] > 250 && colorArray[0]< 270 &&*/ colorArray[1]> 135 && colorArray[1]< 155 /*&& colorArray[2]> 160 && colorArray[2]< 180*/) {
+ //   Serial.println("Purple");
+    return PURPLE;
+  } 
  // Serial.println("Black");
   return BLACK;
   
