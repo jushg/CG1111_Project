@@ -1,7 +1,8 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 2.4
+#define THRESHOLD0 2.7
 #define THRESHOLD1 3.6
+#define WALL 1
 #define RIGHT A1
 #define LEFT A0
 
@@ -66,25 +67,41 @@ void setup()
   //running through the maze
   while (!finished) 
   {
-    if (front_near_wall() && find_black_line()) 
+    if (front_near_wall() || find_black_line()) 
     {
       stop();
       checkColor();
     } 
     else 
     {
-       moveForward();
-    left = analogRead(LEFT) / 1023.0 * 5;
-    right = analogRead(RIGHT) / 1023.0 *5;
-    if (left < THRESHOLD0) {
-      adjustLeft();
-     }
-    if (right < THRESHOLD1) {
-      adjustRight();
-     }
-     if (left > THRESHOLD0 && right > THRESHOLD1) {
       moveForward();
-  }
+      left = analogRead(LEFT) / 1023.0 * 5;
+      right = analogRead(RIGHT) / 1023.0 *5;
+      if (left < THRESHOLD0) {
+        adjustLeft();
+      }
+      if (right < THRESHOLD1) {
+        adjustRight();
+      }
+      if (left > THRESHOLD0 && right > THRESHOLD1) {
+        moveForward();
+      }
+      if (left < WALL) {
+        moveBackward();
+        delay(1000);
+        motor1.run(i);
+        motor2.run(i);
+        delay(100);
+        moveForward();
+      }
+      if (right < WALL) {
+        moveBackward();
+        delay(1000);
+        motor1.run(-i);
+        motor2.run(-i);
+        delay(100);
+        moveForward();
+      }
     }
   }
 }
@@ -136,6 +153,12 @@ void moveForward()
 {
   motor1.run(-i);
   motor2.run(i);
+}
+
+void moveBackward()
+{
+  motor1.run(i);
+  motor2.run(-i);
 }
 
 void stop()
