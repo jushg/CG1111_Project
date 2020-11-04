@@ -188,7 +188,7 @@ void UTurn()
 {
   double left = analogRead(LEFT) / 1023.0 * 5;
   double right = analogRead(RIGHT) / 1023.0 *5;
-  if (right < 3.3 ) {
+  if (left < 3.3 ) {
     turnLeft();
     stop();
     turnLeft();
