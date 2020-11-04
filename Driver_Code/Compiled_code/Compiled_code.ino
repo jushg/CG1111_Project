@@ -1,7 +1,7 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 3.6
-#define THRESHOLD1 3
+#define THRESHOLD0 2.8
+#define THRESHOLD1 3.4
 #define WALL 1
 #define RIGHT A1
 #define LEFT A0
@@ -185,8 +185,16 @@ void turnRight()
 
 void UTurn()
 {
-  turnLeft();
-  turnLeft();
+  double left = analogRead(LEFT) / 1023.0 * 5;
+  double right = analogRead(RIGHT) / 1023.0 *5;
+  if (left > 3 ) {
+    turnLeft();
+    turnLeft();
+  }
+  else {
+    turnRight();
+    turnRight();
+  }
 }
 
 void doubleLeft()
@@ -268,19 +276,25 @@ long getColor(){
       colorArray[c] = getAvgReading(5);
   }
 
-  if (colorArray[0] > 220 && colorArray[0]< 230 && colorArray[1]> 147 && colorArray[1]< 152 && colorArray[2]> 135 && colorArray[2]< 145) {
+  if (colorArray[0] > 210 && colorArray[0]< 240 && colorArray[1]> 140 && colorArray[1]< 160 && colorArray[2]> 130 && colorArray[2]< 150) {
     // return green
+    //Serial.println("Green");
     return GREEN;
-  } else if (colorArray[0] > 250 && colorArray[0]< 260 && colorArray[1]> 140 && colorArray[1]< 155 && colorArray[2]> 170 && colorArray[2]< 180) {
+  } else if (colorArray[0] > 245 && colorArray[0]< 270 && colorArray[1]> 135 && colorArray[1]< 155 && colorArray[2]> 160 && colorArray[2]< 190) {
+ //   Serial.println("Purple");
     return PURPLE;
-  } else if (colorArray[0] > 280 && colorArray[0]< 300 && colorArray[1]> 120 && colorArray[1]< 135 && colorArray[2]> 125 && colorArray[2]< 150) {
+  } else if (colorArray[0] > 275 && colorArray[0]< 305 && colorArray[1]> 115 && colorArray[1]< 135 && colorArray[2]> 125 && colorArray[2]< 150) {
+ //   Serial.println("Red");
     return RED;
-  } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray[1]< 175 && colorArray[2]> 140 && colorArray[2]< 160) {
+  } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray[1]< 175 && colorArray[2]> 135 && colorArray[2]< 165) {
+  //  Serial.println("Yellow");
     return YELLOW;  
-  } else if (colorArray[0] > 250 && colorArray[0]< 270 && colorArray[1]> 160 && colorArray[1]< 180 && colorArray[2]> 180 && colorArray[2]< 200){
+  } else if (colorArray[0] > 235 && colorArray[0]< 275 && colorArray[1]> 150 && colorArray[1]< 190 && colorArray[2]> 175 && colorArray[2]< 210){
+  //  Serial.println("Blue");
     return BLUE;  
   }
-  return BLACK;  
+ // Serial.println("Black");
+  return BLACK;
   
 
 
