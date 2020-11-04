@@ -32,6 +32,7 @@ MeInfraredReceiver infraredReceiverDecode(PORT_4);
 #define NEAR_WALL 6 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
+/*
 char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
 uint16_t colorRange[6][3][2] = {
   {
@@ -53,7 +54,7 @@ uint16_t colorRange[6][3][2] = {
     {0,65536},{0,65536},{0,65536}
   }
 };
-
+*/
 void moveForward (int speed_i = 150);
 
 void setup() 
@@ -61,7 +62,7 @@ void setup()
   double left;
   double right;
   infraredReceiverDecode.begin();
-  Serial.begin(9600);
+  //Serial.begin(9600);
   // put your setup code here, to run once:
   led.setpin(13);
   //running through the maze
@@ -77,14 +78,15 @@ void setup()
       moveForward(200);
       left = analogRead(LEFT) / 1023.0 * 5;
       right = analogRead(RIGHT) / 1023.0 *5;
-      if (left < THRESHOLD0) {
-        adjustLeft();
-      }
-      if (right < THRESHOLD1) {
-        adjustRight();
-      }
       if (left > THRESHOLD0 && right > THRESHOLD1) {
         moveForward(200);
+      } else {
+        if (left <= THRESHOLD0) {
+          adjustLeft();
+        }
+        if (right <= THRESHOLD1) {
+          adjustRight();
+        }
       }
       if (left < WALL) {
         moveBackward();
@@ -138,8 +140,8 @@ void checkColor()
     //two successive right turns
     doubleRight();
   }
-  else if(thecolor == BLACK)
-  {
+  //else if(thecolor == BLACK)
+ // {
      //finished, play song
     buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
     delay(2000);              //Pause for 2000ms, Buzzer no sound
@@ -148,7 +150,7 @@ void checkColor()
     //finished
     finished = true;
     
-  }
+//  }
 }
 void moveForward(int speed_i)
 {
@@ -264,7 +266,7 @@ uint16_t getAvgReading(int times){
   for(int i = 0;i < times;i++){
     reading = lightSensor.read();  // to change to lightsencsor
     total += reading;
-  delay(LDRWait);
+    delay(LDRWait);
   }
 //calculate the average and return it
   return total/times;
@@ -282,7 +284,7 @@ long getColor(){
       } //turn ON the LED, red, green or blue, one colour at a time.
       led.show();
       delay(RGBWait);
-      colorArray[c] = getAvgReading(2);
+      colorArray[c] = getAvgReading(5);
       led.setColor(0,0,0);
       led.show();
       delay(RGBWait);
@@ -302,10 +304,10 @@ long getColor(){
   } else if (colorArray[0] > 310 && colorArray[0]< 330 && colorArray[1]> 155 && colorArray[1]< 175 && colorArray[2]> 135 && colorArray[2]< 165) {
   //  Serial.println("Yellow");
     return YELLOW;  
-  }  else if (/*colorArray[0] > 250 && colorArray[0]< 270 &&*/ colorArray[1]> 155 && colorArray[1]< 200 /*&& colorArray[2]> 175 && colorArray[2]< 210*/){
+  }  else if (colorArray[0] > 250 &&/* colorArray[0]< 270 &&*/ colorArray[1]> 155 && colorArray[1]< 200 /*&& colorArray[2]> 175 && colorArray[2]< 210*/){
   //  Serial.println("Blue");
     return BLUE;  
-  } else if (/*colorArray[0] > 250 && colorArray[0]< 270 &&*/ colorArray[1]> 135 && colorArray[1]< 155 /*&& colorArray[2]> 160 && colorArray[2]< 180*/) {
+  } else if (colorArray[0] > 240 && /*colorArray[0]< 270 &&*/ colorArray[1]> 135 && colorArray[1]< 155 /*&& colorArray[2]> 160 && colorArray[2]< 180*/) {
  //   Serial.println("Purple");
     return PURPLE;
   } 
