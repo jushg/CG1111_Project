@@ -8,9 +8,6 @@
 
 #include <SoftwareSerial.h>
  
-
-// mising color() to check the color
-// IR to check the distance
 MeLineFollower lineFinder(PORT_1);
 MeUltrasonicSensor ultraSensor(PORT_3);
 MeRGBLed led(0, 30);
@@ -75,11 +72,11 @@ void setup()
     } 
     else 
     {
-      moveForward(200);
+      moveForward(190);
       left = analogRead(LEFT) / 1023.0 * 5;
       right = analogRead(RIGHT) / 1023.0 *5;
       if (left > THRESHOLD0 && right > THRESHOLD1) {
-        moveForward(200);
+        moveForward(190);
       } else {
         if (left <= THRESHOLD0) {
           adjustLeft();
