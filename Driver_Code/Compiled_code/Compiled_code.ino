@@ -159,6 +159,30 @@ int noteDurations[] = {
   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 2
 };
 
+int melody2[] = {
+  NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_F4,
+  NOTE_G4, NOTE_G4, NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_A4, NOTE_A4, NOTE_AS4, NOTE_C5, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_G4, NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_A5, NOTE_AS5,
+  NOTE_G4, NOTE_G4, NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_A5, NOTE_AS5,
+
+  NOTE_G4, NOTE_D2, NOTE_G4, NOTE_D5, NOTE_C5, NOTE_D2, NOTE_AS4,NOTE_D2, NOTE_A4,NOTE_F2, NOTE_A4, NOTE_AS4, NOTE_C5,NOTE_F2, NOTE_AS4, NOTE_A4,
+  NOTE_G4, NOTE_D2, NOTE_G4, NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_A5, NOTE_AS5,
+  NOTE_G4, NOTE_D2, NOTE_G4, NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_A5, NOTE_AS5
+};
+
+// note durations: 4 = quarter note, 8 = eighth note, etc
+int noteDurations2[] = {
+  8, 8, 8, 8,
+  4, 8, 8, 4, 4, 4, 8, 8, 4, 8, 8,
+  4, 8, 8, 8, 8, 8, 8,
+  4, 8, 8, 8, 8, 8, 8,
+  
+  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+  8, 8, 8, 8, 8, 8, 8,
+  8, 8, 8, 8, 8, 8, 8,
+};
+
+
 void play_victory(){  
   long length = 40;
   for(long j = 0; j < 2; j += 1){
