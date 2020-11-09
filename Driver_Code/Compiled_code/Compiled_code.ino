@@ -178,8 +178,8 @@ int noteDurations2[] = {
   4, 8, 8, 8, 8, 8, 8,
   
   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-  8, 8, 8, 8, 8, 8, 8,
-  8, 8, 8, 8, 8, 8, 8,
+  8, 8, 8, 8, 8, 8, 8, 8,
+  8, 8, 8, 8, 8, 8, 8, 8,
 };
 
 
@@ -187,7 +187,7 @@ void play_victory(){
   long length = 40;
   for(long j = 0; j < 2; j += 1){
     for (long i = 0; i < length; i += 1){
-      buzzer.tone(melody[i], 700 / noteDurations[i] );
+      buzzer.tone(melody2[i], 700 / noteDurations2[i] );
       delay(100);  
     }
   }
