@@ -1,10 +1,11 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 3.1
-#define THRESHOLD1 3.3
-#define WALL 1.5
-#define RIGHT A1
-#define LEFT A0
+#define THRESHOLD0 2.85
+#define THRESHOLD1 1.9
+#define WALLL 2
+#define WALLR 0.5
+#define LEFT A1
+#define RIGHT A0
 
 #include <SoftwareSerial.h>
  
@@ -29,30 +30,8 @@ MeInfraredReceiver infraredReceiverDecode(PORT_4);
 #define NEAR_WALL 6 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
-/*
-char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
-uint16_t colorRange[6][3][2] = {
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  }
-};
-*/
 
+// Music notes
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -158,7 +137,6 @@ int noteDurations[] = {
   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4,
   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 2
 };
-
 int melody2[] = {
   NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_F4,
   NOTE_G4, NOTE_G4, NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_A4, NOTE_A4, NOTE_AS4, NOTE_C5, NOTE_AS4, NOTE_A4,
@@ -181,8 +159,6 @@ int noteDurations2[] = {
   8, 8, 8, 8, 8, 8, 8, 8,
   8, 8, 8, 8, 8, 8, 8, 8,
 };
-
-
 void play_victory(){  
   long length = 40;
   for(long j = 0; j < 2; j += 1){
@@ -200,10 +176,11 @@ void setup()
   double left;
   double right;
   infraredReceiverDecode.begin();
-  //Serial.begin(9600);
+  Serial.begin(9600);
   // put your setup code here, to run once:
   led.setpin(13);
   //running through the maze
+  
   while (!finished) 
   {
     if (front_near_wall() || find_black_line()) 
@@ -219,14 +196,16 @@ void setup()
       if (left > THRESHOLD0 && right > THRESHOLD1) {
         moveForward(190);
       } else {
-        if (left <= THRESHOLD0) {
-          adjustLeft();
-        }
-        if (right <= THRESHOLD1) {
+        if (left <= THRESHOLD0 && left > WALLL) {
+        Serial.println("close left");
           adjustRight();
         }
-      }
-      if (left < WALL) {
+        else if (right <= THRESHOLD1 && right > WALLR) {
+        Serial.println("Close right");
+          adjustLeft();
+        }
+      
+      else if (right < WALLR) {
         moveBackward();
         delay(500);
         motor1.run(i);
@@ -234,7 +213,7 @@ void setup()
         delay(50);
         moveForward();
       }
-      if (right < WALL) {
+      else if (left < WALLL) {
         moveBackward();
         delay(500);
         motor1.run(-i);
@@ -242,12 +221,17 @@ void setup()
         delay(50);
         moveForward();
       }
+      }
     }
   }
 }
 
 void loop() {
-  
+   /*double left = analogRead(LEFT) / 1023.0 * 5;
+      double right = analogRead(RIGHT) / 1023.0 *5;
+      Serial.println(left);
+      Serial.print(" , ");
+      Serial.println(right);*/
 }
 //decide 
 void checkColor()
@@ -281,11 +265,7 @@ void checkColor()
   else if(thecolor == BLACK)
  {
      //finished, play song
-    /*
-    buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
-    delay(2000);              //Pause for 2000ms, Buzzer no sound
-    buzzer.tone(1200, 1000);  //Buzzer sounds 1200Hz for 1000ms
-    delay(2000);*/
+   
     play_victory();
     //finished
     finished = true;
@@ -314,7 +294,7 @@ void turnLeft()
 {
   motor1.run(i);
   motor2.run(i);
-  delay(470);
+  delay(430);
   stop();
 }
 
@@ -322,7 +302,7 @@ void turnRight()
 {
   motor1.run(-i);
   motor2.run(-i);
-  delay(470);
+  delay(430);
   stop();
 }
 
@@ -330,7 +310,7 @@ void UTurn()
 {
   double left = analogRead(LEFT) / 1023.0 * 5;
   double right = analogRead(RIGHT) / 1023.0 *5;
-  if (left < 3.3 ) {
+  if (left >= THRESHOLD0 ) {
     turnLeft();
     stop();
     turnLeft();
@@ -368,7 +348,7 @@ void adjustLeft() // to be used if mbot is not moving straight based on data fro
  //double v = analogRead(RIGHT) / 1023.0 * 5;
   //if (v < THRESHOLD1) {
     motor1.run(-i);
-    motor2.run(i+10);
+    motor2.run(i+15);
     delay(70);
     motor1.run(-i);
     motor2.run(i);
@@ -429,10 +409,7 @@ long getColor(){
       led.show();
       delay(RGBWait);
       
-  }/*
-  uint16_t r_min_g = colorArray[0] - colorArray[1];
-   uint16_t r_min_b = colorArray[0] - colorArray[2];
-   uint16_t g_min_b = colorArray[1] - colorArray[2];*/
+  }
   if (colorArray[0] > 210 && colorArray[0]< 240 && colorArray[1]> 140 && colorArray[1]< 160 && colorArray[2]> 130 && colorArray[2]< 150) {
     // return green
     //Serial.println("Green");
@@ -454,28 +431,4 @@ long getColor(){
  // Serial.println("Black");
   return BLACK;
   
-
-
-  
-  /*
-  //Get three diffs
-   uint16_t r_min_g = colorArray[0] - colorArray[1];
-   uint16_t r_min_b = colorArray[0] - colorArray[2];
-   uint16_t g_min_b = colorArray[1] - colorArray[2];*
-  // now test for color
-  
-  if (r_min_g > 10 && r_min_b < 40) {
-    // return green
-    return GREEN;
-  } else if (r_min_g > 115 && r_min_b < 145) {
-    return PURPLE;
-  } else if (r_min_b > 255 && r_min_b < 285) {
-    return RED;
-  } else if (r_min_b > 320 && r_min_b < 350) {
-    return YELLOW;  
-  } else if (g_min_b > 0 && g_min_b < 35 && colorArray[0] > 300){
-    return BLUE;  
-  } else {
-    return BLACK;  
-  }*/
 }
