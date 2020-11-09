@@ -163,8 +163,8 @@ void play_victory(){
   long length = 40;
   for(long j = 0; j < 2; j += 1){
     for (long i = 0; i < length; i += 1){
-      buzzer.tone(melody[i], noteDurations[i]);
-      //delay(noteDurations[i]);  
+      buzzer.tone(melody[i], 700 / noteDurations[i] );
+      delay(100);  
     }
   }
 }
@@ -254,8 +254,8 @@ void checkColor()
     //two successive right turns
     doubleRight();
   }
-  //else if(thecolor == BLACK)
- // {
+  else if(thecolor == BLACK)
+ {
      //finished, play song
     /*
     buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
@@ -266,7 +266,7 @@ void checkColor()
     //finished
     finished = true;
     
-//  }
+  }
 }
 void moveForward(int speed_i)
 {
