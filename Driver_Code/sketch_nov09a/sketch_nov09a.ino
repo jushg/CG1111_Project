@@ -30,30 +30,8 @@ MeInfraredReceiver infraredReceiverDecode(PORT_4);
 #define NEAR_WALL 6 //for two cases the value may need to be changed
 int i = 150; // analog value to control speed of motor
 bool finished = false;
-/*
-char colourStr[6][5] = {"R = ", "G = ", "B = ", "Y= ", "P= ","B="};
-uint16_t colorRange[6][3][2] = {
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  },
-  {
-    {0,65536},{0,65536},{0,65536}
-  }
-};
-*/
 
+// Music notes
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -202,14 +180,7 @@ void setup()
   // put your setup code here, to run once:
   led.setpin(13);
   //running through the maze
-  /*for (long i = 0; i < 15; i += 1) {
-    delay(3000);
-      left = analogRead(LEFT) / 1023.0 * 5;
-      right = analogRead(RIGHT) / 1023.0 *5;
-      Serial.println(left);
-      //Serial.print(" , ");
-      //Serial.println(right);
-  }*/
+  
   while (!finished) 
   {
     if (front_near_wall() || find_black_line()) 
@@ -294,11 +265,7 @@ void checkColor()
   else if(thecolor == BLACK)
  {
      //finished, play song
-    /*
-    buzzer.tone(600, 1000);   //Buzzer sounds 600Hz for 1000ms
-    delay(2000);              //Pause for 2000ms, Buzzer no sound
-    buzzer.tone(1200, 1000);  //Buzzer sounds 1200Hz for 1000ms
-    delay(2000);*/
+   
     play_victory();
     //finished
     finished = true;
@@ -442,10 +409,7 @@ long getColor(){
       led.show();
       delay(RGBWait);
       
-  }/*
-  uint16_t r_min_g = colorArray[0] - colorArray[1];
-   uint16_t r_min_b = colorArray[0] - colorArray[2];
-   uint16_t g_min_b = colorArray[1] - colorArray[2];*/
+  }
   if (colorArray[0] > 210 && colorArray[0]< 240 && colorArray[1]> 140 && colorArray[1]< 160 && colorArray[2]> 130 && colorArray[2]< 150) {
     // return green
     //Serial.println("Green");
@@ -467,28 +431,4 @@ long getColor(){
  // Serial.println("Black");
   return BLACK;
   
-
-
-  
-  /*
-  //Get three diffs
-   uint16_t r_min_g = colorArray[0] - colorArray[1];
-   uint16_t r_min_b = colorArray[0] - colorArray[2];
-   uint16_t g_min_b = colorArray[1] - colorArray[2];*
-  // now test for color
-  
-  if (r_min_g > 10 && r_min_b < 40) {
-    // return green
-    return GREEN;
-  } else if (r_min_g > 115 && r_min_b < 145) {
-    return PURPLE;
-  } else if (r_min_b > 255 && r_min_b < 285) {
-    return RED;
-  } else if (r_min_b > 320 && r_min_b < 350) {
-    return YELLOW;  
-  } else if (g_min_b > 0 && g_min_b < 35 && colorArray[0] > 300){
-    return BLUE;  
-  } else {
-    return BLACK;  
-  }*/
 }
