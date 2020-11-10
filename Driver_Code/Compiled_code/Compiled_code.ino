@@ -1,14 +1,8 @@
 #include <MeMCore.h>
 #include "Wire.h"
-#define THRESHOLD0 2.85
-#define THRESHOLD1 1.9
-#define WALLL 2
-#define WALLR 0.5
-#define LEFT A1
-#define RIGHT A0
-
 #include <SoftwareSerial.h>
- 
+
+//Define the mBot Components
 MeLineFollower lineFinder(PORT_1);
 MeUltrasonicSensor ultraSensor(PORT_3);
 MeRGBLed led(0, 30);
@@ -18,17 +12,34 @@ MeDCMotor motor1(M1); //left motor
 MeDCMotor motor2(M2); //right motor
 MeInfraredReceiver infraredReceiverDecode(PORT_4);
 
+//Define working time for the color sensor
 #define RGBWait 200 //in milliseconds
 #define LDRWait 10 //in milliseconds 
 
+//Color code for the color sensor
 #define RED 1
 #define GREEN 2
 #define BLUE 3
 #define YELLOW 4
 #define PURPLE 5
 #define BLACK 6
-#define NEAR_WALL 6 //for two cases the value may need to be changed
+
+// Define proximity to front wall for ultrasonic sensor
+#define NEAR_WALL 6 
+
+// Define the value for the IR sensor on the sides
+#define THRESHOLD0 2.85 //near the wall to the left
+#define THRESHOLD1 1.9  //near the wall to the right
+#define WALLL 2 // very near the wall to the left
+#define WALLR 0.5 // very near the wall to the right
+
+// Define the left and right IR sensors
+#define LEFT A1
+#define RIGHT A0
+
 int i = 150; // analog value to control speed of motor
+
+// set the condition for the maze to finished
 bool finished = false;
 
 // Music notes
@@ -123,21 +134,6 @@ bool finished = false;
 #define NOTE_DS8 4978
 
 int melody[] = {
-  NOTE_D5, NOTE_CS5, NOTE_B4, NOTE_FS4,
-  NOTE_FS4, NOTE_FS4, NOTE_FS4, NOTE_FS4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_A4, NOTE_B4, NOTE_G4,
-  NOTE_G4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_B4, NOTE_CS5, NOTE_D5, NOTE_A4,
-  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_A4, NOTE_D4, NOTE_D4, NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4, NOTE_E4, NOTE_CS4,
-  0
-};
-
-// note durations: 4 = quarter note, 8 = eighth note, etc
-int noteDurations[] = {
-  2, 2, 4, 4,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4,
-  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 2
-};
-int melody2[] = {
   NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_F4,
   NOTE_G4, NOTE_G4, NOTE_D5, NOTE_C5, NOTE_AS4, NOTE_A4, NOTE_A4, NOTE_AS4, NOTE_C5, NOTE_AS4, NOTE_A4,
   NOTE_G4, NOTE_G4, NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_A5, NOTE_AS5,
@@ -149,7 +145,7 @@ int melody2[] = {
 };
 
 // note durations: 4 = quarter note, 8 = eighth note, etc
-int noteDurations2[] = {
+int noteDurations[] = {
   8, 8, 8, 8,
   4, 8, 8, 4, 4, 4, 8, 8, 4, 8, 8,
   4, 8, 8, 8, 8, 8, 8,
@@ -163,7 +159,7 @@ void play_victory(){
   long length = 40;
   for(long j = 0; j < 2; j += 1){
     for (long i = 0; i < length; i += 1){
-      buzzer.tone(melody2[i], 1000 / noteDurations2[i] );
+      buzzer.tone(melody[i], 1000 / noteDurations[i] );
       delay(100);  
     }
   }
@@ -176,11 +172,9 @@ void setup()
   double left;
   double right;
   infraredReceiverDecode.begin();
-  Serial.begin(9600);
-  // put your setup code here, to run once:
   led.setpin(13);
-  //running through the maze
   
+  //running through the maze
   while (!finished) 
   {
     if (front_near_wall() || find_black_line()) 
@@ -197,14 +191,13 @@ void setup()
         moveForward(190);
       } else {
         if (left <= THRESHOLD0 && left > WALLL) {
-        Serial.println("close left");
+        
           adjustRight();
         }
         else if (right <= THRESHOLD1 && right > WALLR) {
-        Serial.println("Close right");
+        
           adjustLeft();
         }
-      
       else if (right < WALLR) {
         moveBackward();
         delay(500);
@@ -226,14 +219,11 @@ void setup()
   }
 }
 
-void loop() {
-   /*double left = analogRead(LEFT) / 1023.0 * 5;
-      double right = analogRead(RIGHT) / 1023.0 *5;
-      Serial.println(left);
-      Serial.print(" , ");
-      Serial.println(right);*/
+void loop() { 
 }
-//decide 
+
+
+//Decide base on color
 void checkColor()
 {
   long thecolor = getColor();
@@ -265,13 +255,13 @@ void checkColor()
   else if(thecolor == BLACK)
  {
      //finished, play song
-   
     play_victory();
-    //finished
     finished = true;
     
   }
 }
+
+// Code for motors
 void moveForward(int speed_i)
 {
   motor1.run(-speed_i);
@@ -332,11 +322,11 @@ void doubleLeft()
   stop();
   turnLeft();
 }
+
 void doubleRight()
 {
   turnRight();
-  while(!front_near_wall())
-  {
+  while(!front_near_wall()){
     moveForward();
   }
   stop();
@@ -345,40 +335,37 @@ void doubleRight()
 
 void adjustLeft() // to be used if mbot is not moving straight based on data from the ir sensors
 {
- //double v = analogRead(RIGHT) / 1023.0 * 5;
-  //if (v < THRESHOLD1) {
     motor1.run(-i);
     motor2.run(i+15);
-    delay(70);
+    delay(40);
     motor1.run(-i);
     motor2.run(i);
-
 }
 void adjustRight() // to be used if mbot is not moving straight based on data from the ir sensors
 {
- //double v = analogRead(LEFT) / 1023.0 * 5;
-  //if (v < THRESHOLD0) {
     motor1.run(-i-15);
     motor2.run(i);
-    delay(70);
+    delay(40);
     motor1.run(-i);
     motor2.run(i);
-
-  //}
 }
 
+// Code for ultrasonic sensor to sense the front wall
 bool front_near_wall() 
 {
   double distance = ultraSensor.distanceCm();
   return (distance < NEAR_WALL);
 }
 
+// Code for line follower to sense the black strip
 bool find_black_line() 
 {
   int sensorState = lineFinder.readSensors();
   return (sensorState == S1_IN_S2_IN); 
 }
 
+
+// code for Color Sensor
 uint16_t getAvgReading(int times){      
 //find the average reading for the requested number of times of scanning LDR
   uint16_t reading;
@@ -407,28 +394,18 @@ long getColor(){
       colorArray[c] = getAvgReading(5);
       led.setColor(0,0,0);
       led.show();
-      delay(RGBWait);
-      
+      delay(RGBWait); 
   }
   if (colorArray[0] > 210 && colorArray[0]< 240 && colorArray[1]> 140 && colorArray[1]< 160 && colorArray[2]> 130 && colorArray[2]< 150) {
-    // return green
-    //Serial.println("Green");
     return GREEN;
-  
   } else if (colorArray[0] > 275 && colorArray[0]< 305 && colorArray[1]> 115 && colorArray[1]< 135 && colorArray[2]> 125 && colorArray[2]< 150) {
- //   Serial.println("Red");
     return RED;
   } else if (colorArray[0] > 300 && colorArray[0]< 350 && colorArray[1]> 155 && colorArray[1]< 185 && colorArray[2]> 135 && colorArray[2]< 165) {
-  //  Serial.println("Yellow");
     return YELLOW;  
-  }  else if (colorArray[0] > 250 &&/* colorArray[0]< 270 &&*/ colorArray[1]> 155 && colorArray[1]< 200 /*&& colorArray[2]> 175 && colorArray[2]< 210*/){
-  //  Serial.println("Blue");
+  }  else if (colorArray[0] > 250 && colorArray[1]> 155 && colorArray[1]< 200 ){
     return BLUE;  
-  } else if (colorArray[0] > 240 && /*colorArray[0]< 270 &&*/ colorArray[1]> 135 && colorArray[1]< 155 /*&& colorArray[2]> 160 && colorArray[2]< 180*/) {
- //   Serial.println("Purple");
+  } else if (colorArray[0] > 240 &&  colorArray[1]> 135 && colorArray[1]< 155 ) {
     return PURPLE;
   } 
- // Serial.println("Black");
   return BLACK;
-  
 }
